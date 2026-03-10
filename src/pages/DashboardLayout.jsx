@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
-import { CgShoppingCart } from 'react-icons/cg';
-import { FaMagnifyingGlass } from 'react-icons/fa6';
-import { NavLink } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Outlet } from 'react-router-dom';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
+
 import {
   IoHomeOutline,
   IoSearchOutline,
@@ -80,7 +80,7 @@ const navLinks = [
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     async function getUser() {
       const { data } = await supabase.auth.getUser();
@@ -88,6 +88,10 @@ export default function Dashboard() {
     }
     getUser();
   }, []);
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    navigate('/');
+  }
 
   return (
     <div className="min-h-screen bg-[hsl(0,0%,85%)] flex flex-col">
@@ -114,8 +118,12 @@ export default function Dashboard() {
             {user ? user.email.split('@')[0] : 'loading...'}
           </div>
           <div className="flex items-center gap-1">
-            <CgShoppingCart />
-            <div>Shopping Cart</div>
+            <button
+              onClick={handleLogout}
+              className="border-black border p-1 px-3 bg-gradient-to-r from-[#FF4760] to-[#FF4385] bg-clip-text text-transparent"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </nav>

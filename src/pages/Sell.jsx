@@ -37,7 +37,6 @@ export default function Sell() {
       return;
     }
     setLoading(true);
-    //Upload image to supabase storage
     const imgPath = `images/${Date.now()}_${img.name}`;
     const { error: imgError } = await supabase.storage
       .from('products')
@@ -47,7 +46,6 @@ export default function Sell() {
       setLoading(false);
       return;
     }
-    //Upload file to supabase storage
     const filePath = `files/${Date.now()}_${file.name}`;
     const { error: fileError } = await supabase.storage
       .from('products')

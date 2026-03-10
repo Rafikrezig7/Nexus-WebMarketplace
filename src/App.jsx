@@ -10,17 +10,19 @@ import Sell from './pages/Sell';
 import PageNotFound from './pages/PageNotFound';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
+import ProductDetail from './pages/ProductDetail';
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Homepage />} />
-        <Route path="/dashboard" element={<DashboardLayout />} >
-         <Route index element={<DashboardHome />} />
-         <Route path="browse" element={<Browse />} />
-         <Route path='purchases' element={<MyPurchases/>}/>
-         <Route path='products' element={<MyProducts/>}/>
-         <Route path='sell' element={<Sell/>}/>
+        <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route index element={<DashboardHome />} />
+          <Route path="browse" element={<Browse />} />
+          <Route path="purchases" element={<MyPurchases />} />
+          <Route path="products" element={<MyProducts />} />
+          <Route path="sell" element={<Sell />} />
+          <Route path="product/:id" element={<ProductDetail />} />
         </Route>
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />

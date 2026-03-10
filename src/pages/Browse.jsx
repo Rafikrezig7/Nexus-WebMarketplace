@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 export default function Browse() {
+  const Navigate = useNavigate();
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
@@ -24,6 +26,7 @@ export default function Browse() {
           className="flex flex-col gap-2 bg-white p-4 rounded-md shadow-md"
           whileHover={{ y: -6, boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}
           key={product.id}
+          onClick={() => Navigate(`/dashboard/product/${product.id}`)}
         >
           <div className="bg-gray-50 rounded-md flex items-center justify-center">
             <img
