@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
-import { useNavigate, NavLink } from 'react-router-dom';
+import { useNavigate, NavLink, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Outlet } from 'react-router-dom';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { createContext } from 'react';
+
+export const SearchContext = createContext('');
 
 import {
   IoHomeOutline,
@@ -79,6 +82,7 @@ const navLinks = [
 ];
 
 export default function Dashboard() {
+  const [searchQuery, setSearchQuery] = useState('');
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   useEffect(() => {
@@ -93,6 +97,8 @@ export default function Dashboard() {
     navigate('/');
   }
 
+  const location = useLocation();
+  const isBrowse = location.pathname === '/dashboard/browse';
   return (
     <div className="min-h-screen bg-[hsl(0,0%,85%)] flex flex-col">
       <nav className="text-black flex justify-between items-center py-4 px-4 md:px-20 bg-[#EBEBEB] shadow border-b border-black gap-3">
@@ -104,14 +110,17 @@ export default function Dashboard() {
             </span>
           </div>
         </div>
-
-        <div className="flex w-full md:grow md:mx-8 relative">
-          <input
-            className="bg-[#d6d6d6] w-full sm:px-5 rounded-full outline-none p-2"
-            placeholder="Search..."
-          />
-          <FaMagnifyingGlass className="text-2xl absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" />
-        </div>
+        {isBrowse && (
+          <div className="flex w-full md:grow md:mx-8 relative">
+            <input
+              className="bg-[#d6d6d6] w-full sm:px-5 rounded-full outline-none p-2"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+            <FaMagnifyingGlass className="text-2xl absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" />
+          </div>
+        )}
 
         <div className=" flex flex-none items-center gap-10 text-xl">
           <div className="hidden md:block">
@@ -142,7 +151,9 @@ export default function Dashboard() {
           ))}
         </ul>
       </div>
-      <Outlet />
+      <SearchContext.Provider value={searchQuery}>
+        <Outlet />
+      </SearchContext.Provider>
     </div>
   );
 }
