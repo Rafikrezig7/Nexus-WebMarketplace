@@ -11,9 +11,13 @@ import {
   IoBagOutline,
   IoGridOutline,
   IoAddCircleOutline,
+  IoFilterOutline,
 } from 'react-icons/io5';
 
-export const SearchContext = createContext('');
+export const SearchContext = createContext({
+  searchQuery: '',
+  showFilter: false,
+});
 
 function NavItem({ to, children, end, icon }) {
   return (
@@ -84,6 +88,7 @@ const navLinks = [
 export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [user, setUser] = useState(null);
+  const [showFilter, setShowFilter] = useState(false);
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -139,7 +144,7 @@ export default function Dashboard() {
       </nav>
 
       <div className="flex w-full px-4 md:px-20 bg-[#292929] text-white py-2">
-        <ul className="flex w-full gap-12 justify-center sm:justify-start">
+        <ul className="flex w-full gap-8 sm:gap-12 justify-center sm:justify-start">
           {navLinks.map(link => (
             <NavItem
               key={link.label}
@@ -151,8 +156,18 @@ export default function Dashboard() {
             </NavItem>
           ))}
         </ul>
+        {isBrowse && (
+          <div class>
+            <button
+              onClick={() => setShowFilter(!showFilter)}
+              className="flex items-center gap-2 text-sm bg-[#F0F0F0] text-gray-500 px-2 py-1 rounded-2xl  "
+            >
+              <IoFilterOutline /> Filter
+            </button>
+          </div>
+        )}
       </div>
-      <SearchContext.Provider value={searchQuery}>
+      <SearchContext.Provider value={{ searchQuery, showFilter }}>
         <Outlet />
       </SearchContext.Provider>
     </div>

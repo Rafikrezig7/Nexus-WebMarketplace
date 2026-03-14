@@ -8,7 +8,6 @@ import { IoFilterOutline } from 'react-icons/io5';
 export default function Browse() {
   const Navigate = useNavigate();
   const [products, setProducts] = useState([]);
-  const [showFilter, setShowFilter] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState('All');
   const [selectedLevel, setSelectedLevel] = useState('All');
   const [selectedFiliere, setSelectedFiliere] = useState('All');
@@ -17,7 +16,7 @@ export default function Browse() {
   const levels = ['All', ...new Set(products.map(p => p.level))];
   const filieres = ['All', ...new Set(products.map(p => p.filiere))];
 
-  const searchQuery = useContext(SearchContext);
+  const { searchQuery, showFilter } = useContext(SearchContext);
   const filteredProducts = products
     .filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()))
     .filter(p => selectedSubject === 'All' || p.subject === selectedSubject)
@@ -36,14 +35,6 @@ export default function Browse() {
     return <div className="p-10 text-gray-400"> No products found </div>;
   return (
     <div>
-      <div className="flex items-center gap-3 px-4 sm:px:20 pt-5">
-        <button
-          onClick={() => setShowFilter(!showFilter)}
-          className="bg-[#F0F0F0] mb-4 rounded-full px-4 py-2 text-sm text-gray-500 flex items-center gap-2 "
-        >
-          <IoFilterOutline /> Filter
-        </button>
-      </div>
       {showFilter && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
