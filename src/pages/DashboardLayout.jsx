@@ -5,9 +5,6 @@ import { motion } from 'framer-motion';
 import { Outlet } from 'react-router-dom';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { createContext } from 'react';
-
-export const SearchContext = createContext('');
-
 import {
   IoHomeOutline,
   IoSearchOutline,
@@ -15,6 +12,9 @@ import {
   IoGridOutline,
   IoAddCircleOutline,
 } from 'react-icons/io5';
+
+export const SearchContext = createContext('');
+
 function NavItem({ to, children, end, icon }) {
   return (
     <li>
@@ -84,13 +84,14 @@ const navLinks = [
 export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [user, setUser] = useState(null);
+
   const navigate = useNavigate();
   useEffect(() => {
-    async function getUser() {
+    async function fetchUser() {
       const { data } = await supabase.auth.getUser();
       setUser(data.user);
     }
-    getUser();
+    fetchUser();
   }, []);
   async function handleLogout() {
     await supabase.auth.signOut();

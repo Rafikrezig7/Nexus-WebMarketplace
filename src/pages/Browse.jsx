@@ -3,42 +3,90 @@ import { supabase } from '../supabaseClient';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { SearchContext } from './DashboardLayout';
+import { IoFilterOutline } from 'react-icons/io5';
 
 export default function Browse() {
   const Navigate = useNavigate();
   const [products, setProducts] = useState([]);
+  const [showFilter, setShowFilter] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState('All');
+  const [selectedLevel, setSelectedLevel] = useState('All');
+  const [selectedFiliere, setSelectedFiliere] = useState('All');
+
+  const subjects = ['All', ...new Set(products.map(p => p.subject))];
+  const levels = ['All', ...new Set(products.map(p => p.level))];
+  const filieres = ['All', ...new Set(products.map(p => p.filiere))];
 
   const searchQuery = useContext(SearchContext);
-
   const filteredProducts = products
     .filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()))
-    .filter(p => selectedSubject === 'All' || p.subject === selectedSubject);
+    .filter(p => selectedSubject === 'All' || p.subject === selectedSubject)
+    .filter(p => selectedLevel === 'All' || p.level === selectedLevel)
+    .filter(p => selectedFiliere === 'All' || p.filiere === selectedFiliere);
+
   useEffect(() => {
-    async function getProducts() {
+    async function fetchProducts() {
       const { data } = await supabase.from('products').select('*');
       setProducts(data);
     }
-    getProducts();
+    fetchProducts();
   }, []);
-
-  const subjects = ['All', ...new Set(products.map(p => p.subject))];
 
   if (products.length === 0)
     return <div className="p-10 text-gray-400"> No products found </div>;
   return (
     <div>
-      <select
-        value={selectedSubject}
-        onChange={e => setSelectedSubject(e.target.value)}
-        className="bg-[#F0F0F0] rounded-full ml-4 sm:ml-20 mt-5 px-4 py-2 outline-none text-sm text-gray-500"
-      >
-        {subjects.map(s => (
-          <option key={s} value={s}>
-            {s}
-          </option>
-        ))}
-      </select>
+      <div className="flex items-center gap-3 px-4 sm:px:20 pt-5">
+        <button
+          onClick={() => setShowFilter(!showFilter)}
+          className="bg-[#F0F0F0] mb-4 rounded-full px-4 py-2 text-sm text-gray-500 flex items-center gap-2 "
+        >
+          <IoFilterOutline /> Filter
+        </button>
+      </div>
+      {showFilter && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+          className="flex gap-4 px-4 sm:px-20 py-3 bg-white shadow-sm flex-wrap justify-center"
+        >
+          <select
+            value={selectedSubject}
+            onChange={e => setSelectedSubject(e.target.value)}
+            className="bg-[#F0F0F0] rounded-full px-4 py-2 outline-none text-sm text-gray-500 "
+          >
+            {subjects.map(s => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+          <select
+            value={selectedLevel}
+            onChange={e => setSelectedLevel(e.target.value)}
+            className="bg-[#F0F0F0] rounded-full px-4 py-2 outline-none text-sm text-gray-500"
+          >
+            {levels.map(l => (
+              <option key={l} value={l}>
+                {l}
+              </option>
+            ))}
+          </select>
+          <select
+            value={selectedFiliere}
+            onChange={e => setSelectedFiliere(e.target.value)}
+            className="bg-[#F0F0F0] rounded-full px-4 py-2 outline-none text-sm text-gray-500"
+          >
+            {filieres.map(f => (
+              <option key={f} value={f}>
+                {f}
+              </option>
+            ))}
+          </select>
+        </motion.div>
+      )}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 px-4 sm:px-20 py-5">
         {filteredProducts.map((product, index) => (
           <motion.div
