@@ -107,7 +107,7 @@ export default function Dashboard() {
   const isBrowse = location.pathname === '/dashboard/browse';
   return (
     <div className="min-h-screen bg-[hsl(0,0%,85%)] flex flex-col">
-      <nav className="text-black flex justify-between items-center py-4 px-4 md:px-20 bg-[#EBEBEB] shadow border-b border-black gap-3">
+      <nav className="text-black flex justify-between items-center py-4 px-4 md:px-40 bg-[#EBEBEB] shadow border-b border-black gap-3">
         <div className="flex items-center justify-between w-full md:w-auto">
           <div className="font-bold flex-none text-3xl md:text-4xl">
             NEX
@@ -143,7 +143,7 @@ export default function Dashboard() {
         </div>
       </nav>
 
-      <div className="flex w-full px-4 md:px-20 bg-[#292929] text-white py-2">
+      <div className="flex w-full px-4 md:px-40 bg-[#292929] text-white py-2">
         <ul className="flex w-full gap-8 sm:gap-12 justify-center sm:justify-start">
           {navLinks.map(link => (
             <NavItem

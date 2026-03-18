@@ -78,7 +78,7 @@ export default function Browse() {
           </select>
         </motion.div>
       )}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 px-4 sm:px-20 py-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 px-4 sm:px-40 py-5">
         {filteredProducts.map((product, index) => (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -112,7 +112,7 @@ export default function Browse() {
                 {product.price} DA
               </p>
               <button className="overflow-hidden whitespace-nowrap w-full sm:w-auto text-sm px-2 bg-gradient-to-r from-[#FF4760] to-[#FF4385] text-white py-1 rounded-full hover:opacity-90 transition-opacity duration-200 shadow-md cursor-pointer">
-                Add To Cart
+                Details
               </button>
             </div>
           </motion.div>

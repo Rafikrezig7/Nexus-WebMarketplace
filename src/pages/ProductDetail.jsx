@@ -2,10 +2,41 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { motion } from 'framer-motion';
+import { FaStar } from 'react-icons/fa';
 export default function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-
+  const [hasPurchased,setHasPurchased]=useState(false)
+  const [rating,setRating]=useState(5)
+  const[comment,setComment]=useState('')
+  const[hasReviewed,setHasReviewed]=useState(false)
+  const[reviews,setReviews]=useState([])
+  useEffect(()=>{
+  async function fetchReviews(){
+    const {data}=await supabase.from('reviews').select('*').eq('product_id',id)
+    setReviews(data)
+  }
+  fetchReviews()
+},[id])
+  
+  useEffect(()=>{
+    async function checkPurchase(){
+      const {data:userData}=await supabase.auth.getUser()
+      const userId = userData.user.id
+      const {data,error}=await supabase.from(`purchases`).select('*').eq('buyer_id',userId).eq('product_id',id).single()
+      if(data && !error) setHasPurchased(true)
+    }
+  //nzido ,error ... wnzido !error back fl page reload useEffect dir khdmtha 
+  checkPurchase()
+  },[id])
+    useEffect(()=>{
+      async function checkReview(){
+        const {data:userData}=await supabase.auth.getUser()
+        const userId=userData.user.id
+        const {data, error}=await supabase.from('reviews').select('*').eq('buyer_id',userId).eq('product_id',id).single()
+        if(data && !error)setHasReviewed(true)
+      }checkReview()
+    },[id])
   useEffect(() => {
     async function fetchProduct() {
       const { data } = await supabase
@@ -42,14 +73,34 @@ export default function ProductDetail() {
       link.click();
     }
   }
+  async function handleReview(){
+    const {data}=await supabase.auth.getUser()
+    const userId=data.user.id
+    
+    const {error}=await supabase.from('reviews').insert({
+      product_id:product.id,
+      buyer_id:userId,
+      rating,
+      comment
+    })
+    if(error){
+      alert(error.message)
+    }else{
+      alert('Comment submited!')
+      setComment('')
+setRating(5)
+setHasReviewed(true)
+    }
+  }
   return (
     <div className="flex justify-center px-4 sm:px-10 py-10">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="flex flex-col lg:flex-row gap-8 w-full max-w-4xl"
+        className="flex flex-col  gap-8 w-full max-w-4xl"
       >
+        <div className='flex flex-col lg:flex-row gap-8'>
         <div className="w-full lg:w-80 shrink-0 bg-white rounded-2xl shadow-md p-6 flex items-center justify-center">
           <img
             className="w-full max-h-80 object-contain rounded-xl"
@@ -92,6 +143,42 @@ export default function ProductDetail() {
             </button>
           </div>
         </div>
+        </div>
+        {hasPurchased && !hasReviewed && (
+          <div className='mt-2 bg-white rounded-2xl shadow-md p-8'>
+            <h3 className='font-bold text-lg text-gray-700'>Leave a Review</h3>
+              <div className='flex gap-1 my-4'>
+                {[1,2,3,4,5].map(star=>(
+                  <FaStar
+                  key={star}
+                  size={24}
+                  className='cursor-pointer transition-colors duration-150'
+                  color={star<=rating ? '#FF4760' : '#d6d6d6'}
+                  onClick={()=> setRating(star)}/>
+                ))}
+              </div>
+
+            <textarea value={comment} onChange={e=>setComment(e.target.value)} placeholder='Write your comment ...' rows={3} className='bg-[#F0F0F0] rounded-2xl px-5 py-3 outline-none text-sm text-gray-500 resize-none w-full' />
+              <button onClick={handleReview} className='w-full py-3 rounded-full my-4 text-white font-semibold bg-gradient-to-r from-[#FF4760] to-[#FF4385] hover:opacity-90 transition-opacity duration-200' >Submit Review</button>
+          </div>
+        )}
+        {hasPurchased && hasReviewed &&(
+          <div className='bg-white rounded-2xl shadow-md p-8 text-center text-gray-500'>You already reviewed this product ✓</div>
+        )}
+        {reviews.length>0 && (
+          <div className='w-full bg-white rounded-2xl shadow-md p-8 flex flex-col gap-4'>
+            <h3 className='font-bold text-lg text-gray-700'>Reviews</h3>
+            {reviews.map(review=>(
+              <div key={review.id} className='flex flex-col gap-2 border-b border-gray-100 pb-4'>
+                <div className='flex gap-1'>{[1,2,3,4,5].map(star=>(
+                  <FaStar key={star}size={16} color={star <= review.rating ? '#FF4760' : '#d6d6d6'} />
+                ))}
+                </div>
+                <p className='text-sm text-gray-600'>{review.comment}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </motion.div>
     </div>
   );

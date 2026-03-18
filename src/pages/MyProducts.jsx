@@ -154,7 +154,7 @@ function MyProducts() {
   }
 
   return (
-    <div className=" grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 px-4 sm:px-20 py-8">
+    <div className=" grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 px-4 sm:px-40 py-8">
       {myproduct.map((product, index) => (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
