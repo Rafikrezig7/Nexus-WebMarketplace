@@ -23,9 +23,10 @@ function MyProducts() {
       setLoading(false);
       const { data } = await supabase
         .from('products')
-        .select('*')
+        .select('*, purchases(count)')
         .eq('seller_id', user);
       setMyProduct(data);
+     console.log(data)
     }
     fetchPurchases();
   }, [user]);
@@ -188,6 +189,7 @@ function MyProducts() {
                 {product.price} DA
               </p>
             </div>
+         
             <button
               onClick={() => {
                 setEditProduct(product);
@@ -197,6 +199,12 @@ function MyProducts() {
               <IoPencilOutline size={13} /> Edit
             </button>
           </div>
+          <div className="flex items-center justify-between px-1 mt-1 pt-2 border-t border-gray-100">
+  <div className="flex flex-col">
+    <p className="text-xs text-gray-400"><span className="font-semibold bg-gradient-to-r from-[#FF4760] to-[#FF4385] bg-clip-text text-transparent">{product.purchases[0]?.count}</span> sales</p>
+    <p className="text-xs text-gray-400"><span className="font-semibold bg-gradient-to-r from-[#FF4760] to-[#FF4385] bg-clip-text text-transparent">{product.purchases[0]?.count * product.price} DA</span> revenue</p>
+  </div>
+</div>
           <button
             onClick={() => {
               handleDelete(product.id);
