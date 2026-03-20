@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { useNavigate, NavLink, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Outlet } from 'react-router-dom';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { createContext } from 'react';
@@ -10,14 +10,12 @@ import {
   IoSearchOutline,
   IoBagOutline,
   IoGridOutline,
-  IoAddCircleOutline,
   IoFilterOutline,
+  IoCloudUploadOutline,
+  IoShieldOutline,
 } from 'react-icons/io5';
 
-export const SearchContext = createContext({
-  searchQuery: '',
-  showFilter: false,
-});
+export const SearchContext = createContext({ searchQuery: '', showFilter: false });
 
 function NavItem({ to, children, end, icon }) {
   return (
@@ -29,17 +27,12 @@ function NavItem({ to, children, end, icon }) {
       >
         {({ isActive }) => (
           <>
-            <span className={` sm:hidden ${isActive ? 'text-white' : ''}`}>
-              {icon}
-            </span>
-            <span
-              className={` hidden sm:inline ${isActive ? 'text-white' : ''}`}
-            >
-              {children}
-            </span>
+            <span className={`sm:hidden ${isActive ? 'text-white' : ''}`}>{icon}</span>
+            <span className={`hidden sm:inline ${isActive ? 'text-white font-semibold' : ''}`}>{children}</span>
             {isActive && (
               <motion.div
-                initial={{ scaleX: 0, originX: 0 }}
+                layoutId="activeLink"
+                initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{ duration: 0.3, ease: 'easeOut' }}
                 className="absolute left-0 -bottom-1 h-0.5 w-full bg-gradient-to-r from-[#FF4760] to-[#FF4385]"
@@ -53,44 +46,42 @@ function NavItem({ to, children, end, icon }) {
 }
 
 const navLinks = [
-  {
-    label: 'Home',
-    to: '/dashboard',
-    end: true,
-    icon: <IoHomeOutline size={30} />,
-  },
-  {
-    label: 'Browse',
-    to: '/dashboard/browse',
-    end: false,
-    icon: <IoSearchOutline size={30} />,
-  },
-  {
-    label: 'My Purchases',
-    to: '/dashboard/purchases',
-    end: false,
-    icon: <IoBagOutline size={30} />,
-  },
-  {
-    label: 'My Products',
-    to: '/dashboard/products',
-    end: false,
-    icon: <IoGridOutline size={30} />,
-  },
-  {
-    label: 'Sell',
-    to: '/dashboard/sell',
-    end: false,
-    icon: <IoAddCircleOutline size={30} />,
-  },
+  { label: 'Home', to: '/dashboard', end: true, icon: <IoHomeOutline size={24} /> },
+  { label: 'Browse', to: '/dashboard/browse', end: false, icon: <IoSearchOutline size={24} /> },
+  { label: 'My Purchases', to: '/dashboard/purchases', end: false, icon: <IoBagOutline size={24} /> },
+  { label: 'My Products', to: '/dashboard/products', end: false, icon: <IoGridOutline size={24} /> },
 ];
 
 export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [user, setUser] = useState(null);
   const [showFilter, setShowFilter] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isAdmin,setIsAdmin]=useState(false)
+ 
+  useEffect(()=>{
+    if(!user)return 
+    async function checkAdmin(){
+      const{data,error}=await supabase.from('profiles').select('role').eq('id',user.id).single()
+       console.log('profile data:', data)
+  console.log('profile error:', error)
+      if(data?.role==='admin')setIsAdmin(true)
+       
+    }
+  checkAdmin()
+  },[user])
+
+  async function handleAdminRequest(){
+    const {error}=await supabase.from('admin_requests').insert({user_id:user.id, status:'pending'})
+    if(error){alert(error.message)}else{
+      alert('Application was sent . check contacts for more info !')
+    }
+  }
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const isBrowse = location.pathname === '/dashboard/browse';
+
   useEffect(() => {
     async function fetchUser() {
       const { data } = await supabase.auth.getUser();
@@ -98,75 +89,136 @@ export default function Dashboard() {
     }
     fetchUser();
   }, []);
+
   async function handleLogout() {
     await supabase.auth.signOut();
     navigate('/');
   }
 
-  const location = useLocation();
-  const isBrowse = location.pathname === '/dashboard/browse';
-  return (
-    <div className="min-h-screen bg-[hsl(0,0%,85%)] flex flex-col">
-      <nav className="text-black flex justify-between items-center py-4 px-4 md:px-40 bg-[#EBEBEB] shadow border-b border-black gap-3">
-        <div className="flex items-center justify-between w-full md:w-auto">
-          <div className="font-bold flex-none text-3xl md:text-4xl">
-            NEX
-            <span className="bg-gradient-to-r from-[#FF4760] to-[#FF4385] bg-clip-text text-transparent">
-              US
-            </span>
-          </div>
-        </div>
-        {isBrowse && (
-          <div className="flex w-full md:grow md:mx-8 relative">
-            <input
-              className="bg-[#d6d6d6] w-full sm:px-5 rounded-full outline-none p-2"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-            />
-            <FaMagnifyingGlass className="text-2xl absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" />
-          </div>
-        )}
+  // close dropdown when clicking outside
+  useEffect(() => {
+    function handleClick(e) {
+      if (!e.target.closest('#profile-dropdown')) setShowDropdown(false);
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
 
-        <div className=" flex flex-none items-center gap-10 text-xl">
-          <div className="hidden md:block">
-            {user ? user.email.split('@')[0] : 'loading...'}
-          </div>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={handleLogout}
-              className="border-black border p-1 px-3 bg-gradient-to-r from-[#FF4760] to-[#FF4385] bg-clip-text text-transparent"
+  return (
+    <div className=" min-h-screen bg-[#EBEBEB] flex flex-col">
+      <div className='sticky top-0 z-50'> {/* navbar tg3d las9a lfog malgre nscroli */}
+      <nav className="flex justify-between items-center py-3 px-6 md:px-20 bg-white shadow-sm border-b border-gray-200 gap-4">
+        <div onClick={() => navigate('/dashboard')} className="cursor-pointer font-bold flex-none text-3xl tracking-tight">
+          NEX<span className="bg-gradient-to-r from-[#FF4760] to-[#FF4385] bg-clip-text text-transparent">US</span>
+        </div>
+
+
+        <AnimatePresence>
+          {isBrowse && (
+            <motion.div
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: '100%' }}
+              exit={{ opacity: 0, width: 0 }}
+              transition={{ duration: 0.3 }}
+              className="flex flex-1 mx-4 relative"
             >
-              Logout
-            </button>
+              <input
+                className="bg-[#F0F0F0] w-full px-5 pr-10 rounded-full outline-none py-2 text-sm text-gray-600"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+              <FaMagnifyingGlass className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <div className="flex flex-none items-center gap-3">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate('/dashboard/sell')}
+            className="hidden md:flex items-center gap-2 text-white text-sm font-semibold bg-gradient-to-r from-[#FF4760] to-[#FF4385] px-4 py-2 rounded-full hover:opacity-90 transition-opacity duration-200 shadow-sm"
+          >
+            <IoCloudUploadOutline size={18} /> Upload
+          </motion.button>
+
+          <div id="profile-dropdown" className="relative">
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowDropdown(!showDropdown)}
+              className="w-10 h-10 rounded-full bg-gradient-to-r from-[#FF4760] to-[#FF4385] flex items-center justify-center cursor-pointer text-white font-bold text-sm shadow-md"
+            >
+              {user ? user.email.split('@')[0].slice(0, 2) : '..'}
+            </motion.div>
+
+            <AnimatePresence>
+              {showDropdown && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute right-0 top-12 bg-white rounded-2xl shadow-xl p-4 flex flex-col gap-3 z-50 w-52 border border-gray-100"
+                >
+
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#FF4760] to-[#FF4385] flex items-center justify-center text-white font-bold text-xs">
+                      {user ? user.email.split('@')[0].slice(0, 2) : '..'}
+                    </div>
+                    <p className="text-sm font-semibold text-gray-700 truncate">
+                      {user ? user.email.split('@')[0] : ''}
+                    </p>
+                  </div>
+
+                  <hr className="border-gray-100" />
+
+                  <button onClick={handleAdminRequest} className="text-sm text-left text-gray-600 hover:text-[#FF4760] transition-colors duration-200 py-1">
+                     Apply for Admin
+                  </button>
+
+                  <hr className="border-gray-100" />
+
+                  <button
+                    onClick={handleLogout}
+                    className="text-sm text-left text-red-400 hover:text-red-600 transition-colors duration-200 py-1"
+                  >
+                     Logout
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </nav>
 
-      <div className="flex w-full px-4 md:px-40 bg-[#292929] text-white py-2">
-        <ul className="flex w-full gap-8 sm:gap-12 justify-center sm:justify-start">
+
+      <div className="flex items-center w-full px-6 md:px-20 bg-[#1E1E2E] text-white py-2 gap-4">
+        <ul className="flex flex-1 gap-6 sm:gap-10 justify-center sm:justify-start">
           {navLinks.map(link => (
-            <NavItem
-              key={link.label}
-              to={link.to}
-              end={link.end}
-              icon={link.icon}
-            >
+            <NavItem key={link.label} to={link.to} end={link.end} icon={link.icon}>
               {link.label}
             </NavItem>
+            
           ))}
+          {isAdmin && (
+            <NavItem to='/Admin' end={false} icon={<IoShieldOutline size={24}/>}>Admin</NavItem>
+          )}
         </ul>
+
         {isBrowse && (
-          <div class>
-            <button
-              onClick={() => setShowFilter(!showFilter)}
-              className="flex items-center gap-2 text-sm bg-[#F0F0F0] text-gray-500 px-2 py-1 rounded-2xl  "
-            >
-              <IoFilterOutline /> Filter
-            </button>
-          </div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowFilter(!showFilter)}
+            className="flex items-center gap-2 text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-full transition-colors duration-200"
+          >
+            <IoFilterOutline size={14} /> Filter
+          </motion.button>
         )}
       </div>
+      </div>
+
       <SearchContext.Provider value={{ searchQuery, showFilter }}>
         <Outlet />
       </SearchContext.Provider>

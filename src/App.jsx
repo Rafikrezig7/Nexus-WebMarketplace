@@ -11,6 +11,7 @@ import PageNotFound from './pages/PageNotFound';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import ProductDetail from './pages/ProductDetail';
+import Admin from './pages/Admin';
 function App() {
   return (
     <BrowserRouter>
@@ -24,6 +25,7 @@ function App() {
           <Route path="sell" element={<Sell />} />
           <Route path="product/:id" element={<ProductDetail />} />
         </Route>
+        <Route path="admin" element={<Admin />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="*" element={<PageNotFound />} />

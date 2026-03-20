@@ -100,10 +100,10 @@ export default function Browse() {
               {product.title}
             </h2>
             <div className="flex gap-1">
-              <span className="bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">
+              <span className="bg-[#1E1E2E] text-white text-xs px-2 py-0.5 rounded-full">
                 {product.subject}
               </span>
-              <span className="bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">
+              <span className="bg-[#1E1E2E] text-white text-xs px-2 py-0.5 rounded-full">
                 {product.level}
               </span>
             </div>
