@@ -9,22 +9,35 @@ export default function SignIn() {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  async function handleSignIn() {
-    const email = `${id}@univ-oran1.dz`;
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
-      });
-      if (error) {
-        alert(error.message);
-      } else {
-        navigate('/Dashboard');
+  async function handleSignIn(){
+    const email=`${id}@univ-oran1.dz`
+    try{
+      const{error}=await supabase.auth.signInWithPassword({email,password})
+      if(error){
+        alert(error.message)
+        return
       }
-    } catch (error) {
-      alert(error.message);
+      const{data:userData}=await supabase.auth.getUser()
+      const userId=userData.user.id
+      const { data: profile } = await supabase
+      .from('profiles')
+      .select('banned')
+      .eq('id', userId)
+      .maybeSingle()
+      if(profile?.banned || !profile){
+        await supabase.auth.signOut()
+        alert('Your account is banned.')
+        return
+      }
+      navigate('/dashboard')
+    }catch(error){
+      alert(error.message)
     }
   }
+  
+  
+     
+    
   return (
     <div className="min-h-screen bg-[#EBEBEB] flex justify-center items-center">
       <motion.div

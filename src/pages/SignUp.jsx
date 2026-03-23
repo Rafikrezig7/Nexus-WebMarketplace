@@ -7,6 +7,7 @@ export default function SignUp() {
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [username,setUsername]=useState('')
   const navigate = useNavigate();
   async function handleSignUp() {
     const email = `${id}@univ-oran1.dz`;
@@ -15,16 +16,21 @@ export default function SignUp() {
       return;
     }
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: email,
         password: password,
       });
       if (error) {
         alert(error.message);
-      } else {
-        alert('you signed up!');
-        navigate('/signin');
+        return
+      } 
+      const{error:profileError}=await supabase.from('profiles').update({username,matricule:id}).eq('id',data.user.id)
+      if(profileError){
+        alert(profileError.message)
+        return
       }
+      alert('You signed up!')
+      navigate('/signin')
     } catch (error) {
       alert(error.message);
     }
@@ -40,10 +46,10 @@ export default function SignUp() {
       >
         {/* Left side - gradient */}
 
-        <div className="relative flex flex-col justify-center items-center gap-4 text-white bg-linear-to-r from-[#FF4760] to-[#FF4385] w-[50%]">
+        <div className=" relative flex flex-col justify-center items-center gap-4 text-white bg-linear-to-r from-[#FF4760] to-[#FF4385] w-[50%]">
           <div
             onClick={() => navigate('/')}
-            className="absolute top-4 left-4 flex items-center gap-1.5 cursor-pointer opacity-80 hover:opacity-100 transition-opacity duration-200"
+            className="absolute top-4 left-4 flex items-center gap-1.5 font-semibold cursor-pointer opacity-80 hover:opacity-100 transition-opacity duration-200"
           >
             <IoCaretBackOutline />
             <p className="text-sm">Go Back</p>
@@ -63,6 +69,16 @@ export default function SignUp() {
           <h1 className="font-bold text-2xl text-gray-700 mb-5">Sign Up</h1>
 
           <div className="flex flex-col gap-4">
+            <label className='text-xs font-bold text-gray-500 tracking-widest'>
+              USERNAME
+              <input
+                value={username}
+                onChange={e=>setUsername(e.target.value)}
+                name='username'
+                placeholder='Seal...'
+                className='block bg-[#F0F0F0] w-full p-3 mt-2 rounded-full outline-none text-sm text-gray-400'
+              />
+            </label>
             <label className="text-xs font-bold text-gray-500 tracking-widest">
               ID NUMBER
               <input

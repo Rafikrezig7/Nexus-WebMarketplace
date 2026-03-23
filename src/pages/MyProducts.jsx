@@ -26,7 +26,6 @@ function MyProducts() {
         .select('*, purchases(count)')
         .eq('seller_id', user);
       setMyProduct(data);
-     console.log(data)
     }
     fetchPurchases();
   }, [user]);
