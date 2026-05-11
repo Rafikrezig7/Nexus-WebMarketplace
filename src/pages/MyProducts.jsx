@@ -52,6 +52,7 @@ function MyProducts() {
       alert(error.message);
     }
   }
+
   async function handleEdit() {
     const { error } = await supabase
       .from('products')
@@ -74,18 +75,18 @@ function MyProducts() {
     alert('product updated');
   }
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="p-10 text-gray-400">Loading...</div>;
+  if (myproduct.length === 0)
+    return (
+      <div className="p-10 text-gray-400">No Products Uploaded yet ...</div>
+    );
 
-  if (myproduct.length === 0) {
-    return <div>No Products Uploaded yet ...</div>;
-  }
-
+  // ↪ Écran d'édition (inchangé)
   if (editProduct) {
     return (
       <div className="flex justify-center items-center my-10 px-4">
         <div className="bg-white rounded-2xl shadow-md w-full max-w-2xl p-10 flex flex-col gap-4">
           <h1 className="text-2xl font-bold text-gray-700">Edit Product</h1>
-
           <label className="text-xs font-bold text-gray-500 tracking-widest">
             TITLE
             <input
@@ -153,61 +154,77 @@ function MyProducts() {
     );
   }
 
+  // ✅ Liste des produits – style aligné sur Browse
   return (
-    <div className=" grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 px-4 sm:px-40 py-8">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 px-4 sm:px-40 py-8">
       {myproduct.map((product, index) => (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: index * 0.05 }}
-          className="relative flex flex-col gap-2 bg-white p-4 rounded-md shadow-md"
+          className="group flex flex-col bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 overflow-hidden relative"
           whileHover={{ y: -6, boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}
           key={product.id}
         >
-          <div className="bg-gray-50 mt-5 rounded-md flex items-center justify-center">
+          {/* Image */}
+          <div className="relative h-56 w-full bg-gray-50 overflow-hidden flex-shrink-0">
             <img
               src={product.image_url}
               alt={product.title}
-              className="h-64 w-full rounded-md object-contain"
+              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 ease-out"
             />
           </div>
-          <h2 className="font-semibold text-gray-700 text-sm">
-            {product.title}
-          </h2>
-          <div className="flex gap-1">
-            <span className="bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">
-              {product.subject}
-            </span>
-            <span className="bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">
-              {product.level}
-            </span>
-          </div>
-          <div className="flex px-1 items-center justify-between ">
-            <div className="flex items-center justify-between px-1">
-              <p className="whitespace-nowrap mr-2 font-bold text-sm bg-gradient-to-r from-[#FF4760] to-[#FF4385] bg-clip-text text-transparent">
+
+          {/* Contenu */}
+          <div className="p-4 flex flex-col flex-grow gap-3">
+            <h2 className="font-semibold text-gray-800 text-base line-clamp-2 leading-tight">
+              {product.title}
+            </h2>
+
+            <div className="flex flex-wrap gap-1.5">
+              <span className="bg-gray-100 text-gray-600 text-[11px] font-medium px-2.5 py-1 rounded-md">
+                {product.subject}
+              </span>
+              <span className="bg-gray-100 text-gray-600 text-[11px] font-medium px-2.5 py-1 rounded-md">
+                {product.level}
+              </span>
+            </div>
+
+            {/* Prix + bouton Edit */}
+            <div className="flex items-center justify-between mt-2">
+              <p className="font-bold text-base bg-gradient-to-r from-[#FF4760] to-[#FF4385] bg-clip-text text-transparent">
                 {product.price} DA
               </p>
+              <button
+                onClick={() => setEditProduct(product)}
+                className="flex items-center gap-1 bg-[#fff0f1] font-bold text-[#FF4760] rounded-full p-1 px-2 hover:bg-gradient-to-r hover:from-[#FF4760] hover:to-[#FF4385] hover:text-white transition-colors duration-200"
+              >
+                <IoPencilOutline size={13} /> Edit
+              </button>
             </div>
-         
-            <button
-              onClick={() => {
-                setEditProduct(product);
-              }}
-              className="flex items-center gap-1 bg-[#fff0f1] font-bold text-[#FF4760] rounded-full p-1 px-2 hover:bg-gradient-to-r hover:from-[#FF4760] hover:to-[#FF4385] hover:text-white transition-colors duration-200"
-            >
-              <IoPencilOutline size={13} /> Edit
-            </button>
+
+            {/* Ventes & Revenu */}
+            <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+              <div className="flex flex-col">
+                <p className="text-xs text-gray-400">
+                  <span className="font-semibold bg-gradient-to-r from-[#FF4760] to-[#FF4385] bg-clip-text text-transparent">
+                    {product.purchases[0]?.count}
+                  </span>{' '}
+                  sales
+                </p>
+                <p className="text-xs text-gray-400">
+                  <span className="font-semibold bg-gradient-to-r from-[#FF4760] to-[#FF4385] bg-clip-text text-transparent">
+                    {product.purchases[0]?.count * product.price} DA
+                  </span>{' '}
+                  revenue
+                </p>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center justify-between px-1 mt-1 pt-2 border-t border-gray-100">
-  <div className="flex flex-col">
-    <p className="text-xs text-gray-400"><span className="font-semibold bg-gradient-to-r from-[#FF4760] to-[#FF4385] bg-clip-text text-transparent">{product.purchases[0]?.count}</span> sales</p>
-    <p className="text-xs text-gray-400"><span className="font-semibold bg-gradient-to-r from-[#FF4760] to-[#FF4385] bg-clip-text text-transparent">{product.purchases[0]?.count * product.price} DA</span> revenue</p>
-  </div>
-</div>
+
+          {/* Bouton Delete (flottant) */}
           <button
-            onClick={() => {
-              handleDelete(product.id);
-            }}
+            onClick={() => handleDelete(product.id)}
             className="absolute top-2 right-2 bg-[#fff0f1] text-[#FF4760] rounded-full p-1 hover:bg-red-500 hover:text-white transition-colors duration-200"
           >
             <IoRemoveOutline size={16} />
@@ -217,4 +234,5 @@ function MyProducts() {
     </div>
   );
 }
+
 export default MyProducts;

@@ -78,42 +78,49 @@ export default function Browse() {
           </select>
         </motion.div>
       )}
+
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 px-4 sm:px-40 py-5">
         {filteredProducts.map((product, index) => (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.05 }}
-            className="flex flex-col gap-2 bg-white p-4 rounded-md shadow-md"
-            whileHover={{ y: -6, boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}
             key={product.id}
             onClick={() => Navigate(`/dashboard/product/${product.id}`)}
+            className="group flex flex-col bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 overflow-hidden cursor-pointer"
+            whileHover={{ y: -6, boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}
           >
-            <div className="bg-gray-50 rounded-md flex items-center justify-center">
+            <div className="relative h-56 w-full bg-gray-50 overflow-hidden flex-shrink-0">
               <img
                 src={product.image_url}
                 alt={product.title}
-                className="h-64 w-full rounded-md object-contain"
+                className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 ease-out"
               />
             </div>
-            <h2 className="font-semibold text-gray-700 text-sm">
-              {product.title}
-            </h2>
-            <div className="flex gap-1">
-              <span className="bg-[#1E1E2E] text-white text-xs px-2 py-0.5 rounded-full">
-                {product.subject}
-              </span>
-              <span className="bg-[#1E1E2E] text-white text-xs px-2 py-0.5 rounded-full">
-                {product.level}
-              </span>
-            </div>
-            <div className="flex items-center justify-between px-1">
-              <p className="whitespace-nowrap mr-2 font-bold text-sm bg-gradient-to-r from-[#FF4760] to-[#FF4385] bg-clip-text text-transparent">
-                {product.price} DA
-              </p>
-              <button className="overflow-hidden whitespace-nowrap w-full sm:w-auto text-sm px-2 bg-gradient-to-r from-[#FF4760] to-[#FF4385] text-white py-1 rounded-full hover:opacity-90 transition-opacity duration-200 shadow-md cursor-pointer">
-                Details
-              </button>
+
+            <div className="p-4 flex flex-col flex-grow gap-3">
+              <h2 className="font-semibold text-gray-800 text-base line-clamp-2 leading-tight">
+                {product.title}
+              </h2>
+
+              <div className="flex flex-wrap gap-1.5">
+                <span className="bg-gray-100 text-gray-600 text-[11px] font-medium px-2.5 py-1 rounded-md">
+                  {product.subject}
+                </span>
+                <span className="bg-gray-100 text-gray-600 text-[11px] font-medium px-2.5 py-1 rounded-md">
+                  {product.level}
+                </span>
+              </div>
+
+              <div className="mt-auto pt-3 border-t border-gray-50 flex items-center justify-between">
+                <p className="font-bold text-base bg-gradient-to-r from-[#FF4760] to-[#FF4385] bg-clip-text text-transparent">
+                  {product.price} DA
+                </p>
+
+                <button className="text-sm px-4 py-1.5 bg-gradient-to-r from-[#FF4760] to-[#FF4385] text-white rounded-full font-medium hover:shadow-lg hover:shadow-pink-500/30 transition-all duration-200">
+                  Details
+                </button>
+              </div>
             </div>
           </motion.div>
         ))}
