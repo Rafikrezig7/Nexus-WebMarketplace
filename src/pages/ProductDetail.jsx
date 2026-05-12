@@ -59,14 +59,13 @@ export default function ProductDetail() {
       const { data: userData } = await supabase.auth.getUser();
       const userId = userData.user.id;
       const { data, error } = await supabase
-        .from(`purchases`)
+        .from('purchases')
         .select('*')
         .eq('buyer_id', userId)
         .eq('product_id', id)
-        .single();
+        .maybeSingle();
       if (data && !error) setHasPurchased(true);
     }
-    //nzido ,error ... wnzido !error back fl page reload useEffect dir khdmtha
     checkPurchase();
   }, [id]);
   useEffect(() => {
@@ -78,11 +77,12 @@ export default function ProductDetail() {
         .select('*')
         .eq('buyer_id', userId)
         .eq('product_id', id)
-        .single();
+        .maybeSingle();
       if (data && !error) setHasReviewed(true);
     }
     checkReview();
   }, [id]);
+
   useEffect(() => {
     async function fetchProduct() {
       const { data } = await supabase
@@ -109,10 +109,16 @@ export default function ProductDetail() {
       buyer_id: userId,
       product_id: product.id,
     });
+
     if (error) {
       alert(error.message);
     } else {
       alert('Purchase successful!');
+
+      // ✅ Mark as purchased immediately (no refresh needed)
+      setHasPurchased(true);
+
+      // Trigger file download
       const link = document.createElement('a');
       link.href = product.file_url;
       link.download = product.title;
