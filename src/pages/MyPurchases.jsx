@@ -43,7 +43,7 @@ export default function MyPurchases() {
           whileHover={{ y: -6, boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}
           key={purchase.products.id}
         >
-          {/* Image */}
+          {/* pic */}
           <div className="relative h-56 w-full bg-gray-50 overflow-hidden flex-shrink-0">
             <img
               src={purchase.products.image_url}
@@ -52,7 +52,7 @@ export default function MyPurchases() {
             />
           </div>
 
-          {/* Contenu */}
+          {/* mo7tawa */}
           <div className="p-4 flex flex-col flex-grow gap-3">
             <h2 className="font-semibold text-gray-800 text-base line-clamp-2 leading-tight">
               {purchase.products.title}
@@ -71,7 +71,6 @@ export default function MyPurchases() {
               <p className="font-bold text-base bg-gradient-to-r from-[#FF4760] to-[#FF4385] bg-clip-text text-transparent">
                 {purchase.products.price} DA
               </p>
-              {/* Aucun bouton ajouté, comme demandé */}
             </div>
           </div>
         </motion.div>

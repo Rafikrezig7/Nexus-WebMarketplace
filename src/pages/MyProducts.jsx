@@ -81,7 +81,6 @@ function MyProducts() {
       <div className="p-10 text-gray-400">No Products Uploaded yet ...</div>
     );
 
-  // ↪ Écran d'édition (inchangé)
   if (editProduct) {
     return (
       <div className="flex justify-center items-center my-10 px-4">
@@ -154,7 +153,7 @@ function MyProducts() {
     );
   }
 
-  // ✅ Liste des produits – style aligné sur Browse
+  // product list
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 px-4 sm:px-40 py-8">
       {myproduct.map((product, index) => (
@@ -166,7 +165,6 @@ function MyProducts() {
           whileHover={{ y: -6, boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}
           key={product.id}
         >
-          {/* Image */}
           <div className="relative h-56 w-full bg-gray-50 overflow-hidden flex-shrink-0">
             <img
               src={product.image_url}
@@ -175,7 +173,6 @@ function MyProducts() {
             />
           </div>
 
-          {/* Contenu */}
           <div className="p-4 flex flex-col flex-grow gap-3">
             <h2 className="font-semibold text-gray-800 text-base line-clamp-2 leading-tight">
               {product.title}
@@ -190,7 +187,6 @@ function MyProducts() {
               </span>
             </div>
 
-            {/* Prix + bouton Edit */}
             <div className="flex items-center justify-between mt-2">
               <p className="font-bold text-base bg-gradient-to-r from-[#FF4760] to-[#FF4385] bg-clip-text text-transparent">
                 {product.price} DA
@@ -203,7 +199,6 @@ function MyProducts() {
               </button>
             </div>
 
-            {/* Ventes & Revenu */}
             <div className="flex items-center justify-between pt-2 border-t border-gray-100">
               <div className="flex flex-col">
                 <p className="text-xs text-gray-400">
@@ -222,7 +217,6 @@ function MyProducts() {
             </div>
           </div>
 
-          {/* Bouton Delete (flottant) */}
           <button
             onClick={() => handleDelete(product.id)}
             className="absolute top-2 right-2 bg-[#fff0f1] text-[#FF4760] rounded-full p-1 hover:bg-red-500 hover:text-white transition-colors duration-200"
