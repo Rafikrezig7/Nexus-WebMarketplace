@@ -53,9 +53,9 @@ export default function SignIn() {
   return (
     <div className="min-h-screen bg-[#EBEBEB] flex justify-center items-center p-4 md:p-6">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: easeOut }}
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6, ease: easeOut }}
         className="flex flex-col md:flex-row bg-white rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden min-h-[600px]"
       >
         {/* Left Side - Form */}
@@ -85,7 +85,7 @@ export default function SignIn() {
                 </span>
                 <input
                   value={id}
-                  onChange={(e) => setId(e.target.value)}
+                  onChange={e => setId(e.target.value)}
                   className="block bg-[#F0F0F0] w-full px-5 py-4 rounded-xl outline-none text-sm text-gray-700 focus:ring-2 focus:ring-[#FF4760]/20 transition-all placeholder-gray-400"
                   name="id number"
                   placeholder="23********"
@@ -99,7 +99,7 @@ export default function SignIn() {
                 </span>
                 <input
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   type="password"
                   className="block bg-[#F0F0F0] w-full px-5 py-4 rounded-xl outline-none text-sm text-gray-700 focus:ring-2 focus:ring-[#FF4760]/20 transition-all placeholder-gray-400"
                   name="password"
@@ -118,7 +118,6 @@ export default function SignIn() {
             </div>
           </div>
         </div>
-
 
         <div className="w-full md:w-[45%] flex flex-col justify-center items-center p-8 md:p-12 text-white bg-gradient-to-br from-[#FF4760] to-[#FF4385] relative overflow-hidden">
           <div className="absolute top-[-50px] right-[-50px] w-40 h-40 bg-white opacity-10 rounded-full blur-2xl"></div>

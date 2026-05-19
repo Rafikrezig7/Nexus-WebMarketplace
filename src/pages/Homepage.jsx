@@ -7,7 +7,6 @@ export default function Homepage() {
 
   return (
     <div className="min-h-screen bg-[#EBEBEB] relative flex items-center justify-center overflow-hidden">
-      {/* Decorative background blobs */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-[#FF4760]/20 to-transparent rounded-full blur-3xl" />
         <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-gradient-to-tr from-[#FF4385]/20 to-transparent rounded-full blur-3xl" />
@@ -32,9 +31,9 @@ export default function Homepage() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="font-bold text-5xl sm:text-6xl text-gray-800 leading-tight"
         >
-          Welcome to{' '}
+          Welcome to NEX
           <span className="bg-gradient-to-r from-[#FF4760] to-[#FF4385] bg-clip-text text-transparent">
-            NEXUS
+            US
           </span>
         </motion.h1>
 
@@ -76,7 +75,7 @@ export default function Homepage() {
           transition={{ duration: 0.6, delay: 0.6 }}
           className="mt-12 text-xs text-gray-400"
         >
-          🔒 Secure login with your university student ID
+          Secure login with your university student ID
         </motion.p>
       </div>
     </div>

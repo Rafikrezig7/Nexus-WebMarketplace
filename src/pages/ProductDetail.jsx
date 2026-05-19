@@ -114,17 +114,14 @@ export default function ProductDetail() {
       alert(error.message);
     } else {
       alert('Purchase successful!');
-
-      // ✅ Mark as purchased immediately (no refresh needed)
       setHasPurchased(true);
-
-      // Trigger file download
       const link = document.createElement('a');
       link.href = product.file_url;
       link.download = product.title;
       link.click();
     }
   }
+
   async function handleReview() {
     const { data } = await supabase.auth.getUser();
     const userId = data.user.id;
